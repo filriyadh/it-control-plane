@@ -7,7 +7,7 @@ interface MetricCardProps {
   icon: LucideIcon;
   trend?: string;
   trendDirection?: "up" | "down" | "neutral";
-  variant?: "default" | "success" | "warning" | "danger" | "info";
+  variant?: "default" | "success" | "warning" | "danger" | "info" | "neutral";
 }
 
 const variantStyles = {
