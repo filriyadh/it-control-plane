@@ -25,6 +25,7 @@ const iconVariantStyles = {
   warning: "bg-warning/10 text-warning",
   danger: "bg-destructive/10 text-destructive",
   info: "bg-info/10 text-info",
+  neutral: "bg-muted text-muted-foreground",
 };
 
 export function MetricCard({ label, value, icon: Icon, trend, trendDirection, variant = "default" }: MetricCardProps) {
