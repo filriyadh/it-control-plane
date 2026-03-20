@@ -16,6 +16,7 @@ const variantStyles = {
   warning: "border-l-4 border-l-warning border-t-0 border-r-0 border-b-0",
   danger: "border-l-4 border-l-destructive border-t-0 border-r-0 border-b-0",
   info: "border-l-4 border-l-info border-t-0 border-r-0 border-b-0",
+  neutral: "border-border",
 };
 
 const iconVariantStyles = {
