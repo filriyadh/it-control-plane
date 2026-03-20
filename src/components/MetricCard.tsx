@@ -1,5 +1,6 @@
 import { LucideIcon } from "lucide-react";
 import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 
 interface MetricCardProps {
   label: string;
@@ -8,6 +9,7 @@ interface MetricCardProps {
   trend?: string;
   trendDirection?: "up" | "down" | "neutral";
   variant?: "default" | "success" | "warning" | "danger" | "info" | "neutral";
+  href?: string;
 }
 
 const variantStyles = {
@@ -28,13 +30,16 @@ const iconVariantStyles = {
   neutral: "bg-muted text-muted-foreground",
 };
 
-export function MetricCard({ label, value, icon: Icon, trend, trendDirection, variant = "default" }: MetricCardProps) {
+export function MetricCard({ label, value, icon: Icon, trend, trendDirection, variant = "default", href }: MetricCardProps) {
+  const navigate = useNavigate();
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
-      className={`metric-card ${variantStyles[variant]}`}
+      className={`metric-card ${variantStyles[variant]} ${href ? "cursor-pointer hover:ring-2 hover:ring-primary/20" : ""}`}
+      onClick={href ? () => navigate(href) : undefined}
     >
       <div className="flex items-start justify-between">
         <div>

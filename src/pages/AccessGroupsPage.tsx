@@ -2,10 +2,13 @@ import { useState } from "react";
 import { PageLayout } from "@/components/PageLayout";
 import { StatusBadge } from "@/components/StatusBadge";
 import { groups } from "@/data/mock-data";
-import { Users, Shield, Search, ChevronRight } from "lucide-react";
+import { Users, Shield, Search, ChevronRight, Plus, UserPlus, UserMinus } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
 import { MetricCard } from "@/components/MetricCard";
 import { motion } from "framer-motion";
 
@@ -13,6 +16,7 @@ export default function AccessGroupsPage() {
   const [search, setSearch] = useState("");
   const [showPrivilegedOnly, setShowPrivilegedOnly] = useState(false);
   const [selectedGroup, setSelectedGroup] = useState<typeof groups[0] | null>(null);
+  const [membershipDialog, setMembershipDialog] = useState<{ group: typeof groups[0]; action: "add" | "remove" } | null>(null);
 
   const filtered = groups.filter(g => {
     const matchSearch = g.name.toLowerCase().includes(search.toLowerCase());
@@ -27,7 +31,11 @@ export default function AccessGroupsPage() {
     <PageLayout
       title="Access & Groups"
       description="Inspect group memberships and request access changes"
-      actions={<Button>Request Membership Change</Button>}
+      actions={
+        <Button onClick={() => setMembershipDialog({ group: groups[0], action: "add" })}>
+          <Plus className="h-4 w-4 mr-1" /> Request Change
+        </Button>
+      }
     >
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
         <MetricCard label="Total Groups" value={groups.length} icon={Users} variant="info" />
@@ -73,7 +81,8 @@ export default function AccessGroupsPage() {
         </div>
       </div>
 
-      <Dialog open={!!selectedGroup} onOpenChange={() => setSelectedGroup(null)}>
+      {/* Group Detail Dialog */}
+      <Dialog open={!!selectedGroup && !membershipDialog} onOpenChange={() => setSelectedGroup(null)}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>{selectedGroup?.name}</DialogTitle>
@@ -97,7 +106,59 @@ export default function AccessGroupsPage() {
           )}
           <DialogFooter>
             <Button variant="outline" onClick={() => setSelectedGroup(null)}>Close</Button>
-            <Button>Request Change</Button>
+            <Button variant="outline" onClick={() => { if (selectedGroup) setMembershipDialog({ group: selectedGroup, action: "remove" }); }}>
+              <UserMinus className="h-3 w-3 mr-1" /> Remove Member
+            </Button>
+            <Button onClick={() => { if (selectedGroup) setMembershipDialog({ group: selectedGroup, action: "add" }); }}>
+              <UserPlus className="h-3 w-3 mr-1" /> Add Member
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Membership Change Dialog */}
+      <Dialog open={!!membershipDialog} onOpenChange={() => setMembershipDialog(null)}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle>{membershipDialog?.action === "add" ? "Add Member to Group" : "Remove Member from Group"}</DialogTitle>
+            <DialogDescription>
+              {membershipDialog?.action === "add"
+                ? "Request to add a user to a group. Privileged group changes require approval."
+                : "Request to remove a user from a group. This action will be audited."}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <Label>Group</Label>
+              <Select defaultValue={membershipDialog?.group.id}>
+                <SelectTrigger className="mt-1"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  {groups.map(g => (
+                    <SelectItem key={g.id} value={g.id}>{g.name} {g.isPrivileged ? "⚠️" : ""}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label>User Email</Label>
+              <Input placeholder="user@contoso.com" className="mt-1" />
+            </div>
+            <div>
+              <Label>Business Justification</Label>
+              <Textarea placeholder="Explain why this change is needed..." className="mt-1" />
+            </div>
+            {membershipDialog?.group.isPrivileged && (
+              <div className="bg-warning/10 text-warning text-sm px-3 py-2 rounded flex items-center gap-2">
+                <Shield className="h-4 w-4" />
+                This is a privileged group — changes require approval workflow.
+              </div>
+            )}
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setMembershipDialog(null)}>Cancel</Button>
+            <Button onClick={() => setMembershipDialog(null)}>
+              {membershipDialog?.group.isPrivileged ? "Submit for Approval" : "Submit Request"}
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
