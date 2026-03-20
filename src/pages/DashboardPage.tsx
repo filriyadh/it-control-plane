@@ -1,9 +1,17 @@
 import { PageLayout } from "@/components/PageLayout";
 import { MetricCard } from "@/components/MetricCard";
 import { StatusBadge } from "@/components/StatusBadge";
-import { dashboardMetrics, recentActivity, jobRuns, licenseRecommendations, staleAccounts, onboardingQueue, offboardingQueue } from "@/data/mock-data";
+import { dashboardMetrics, recentActivity, jobRuns, licenseRecommendations, licenseSubscriptions, staleAccounts, onboardingQueue, offboardingQueue } from "@/data/mock-data";
 import { Users, KeyRound, UserX, ShieldAlert, AlertTriangle, CheckCircle, Activity, Clock } from "lucide-react";
 import { motion } from "framer-motion";
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from "recharts";
+
+const chartData = licenseSubscriptions.map(l => ({
+  name: l.name.replace("Microsoft 365 ", "M365 ").replace(" for Endpoint", ""),
+  assigned: l.assigned,
+  available: l.available,
+  utilization: Math.round((l.assigned / l.total) * 100),
+}));
 
 export default function DashboardPage() {
   const pendingStale = staleAccounts.filter(a => a.status === "pending_review");
@@ -15,11 +23,33 @@ export default function DashboardPage() {
     <PageLayout title="Dashboard" description="IT operations overview and pending work">
       {/* Metrics */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        <MetricCard label="Active Users" value={dashboardMetrics.activeUsers.toLocaleString()} icon={Users} variant="info" trend="+12 this week" trendDirection="up" />
-        <MetricCard label="Unused Licenses" value={dashboardMetrics.unusedLicenses} icon={KeyRound} variant="warning" trend={`$${(dashboardMetrics.unusedLicenses * 15).toLocaleString()}/mo potential savings`} />
-        <MetricCard label="Stale Accounts" value={dashboardMetrics.staleAccounts} icon={UserX} variant="danger" trend={`${pendingStale.length} pending review`} />
-        <MetricCard label="MFA Gaps" value={dashboardMetrics.mfaGaps} icon={ShieldAlert} variant="warning" trend="3.9% of users" />
+        <MetricCard label="Active Users" value={dashboardMetrics.activeUsers.toLocaleString()} icon={Users} variant="info" trend="+12 this week" trendDirection="up" href="/access-groups" />
+        <MetricCard label="Unused Licenses" value={dashboardMetrics.unusedLicenses} icon={KeyRound} variant="warning" trend={`$${(dashboardMetrics.unusedLicenses * 15).toLocaleString()}/mo potential savings`} href="/licenses" />
+        <MetricCard label="Stale Accounts" value={dashboardMetrics.staleAccounts} icon={UserX} variant="danger" trend={`${pendingStale.length} pending review`} href="/stale-accounts" />
+        <MetricCard label="MFA Gaps" value={dashboardMetrics.mfaGaps} icon={ShieldAlert} variant="warning" trend="3.9% of users" href="/security-posture" />
       </div>
+
+      {/* License Utilization Chart */}
+      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.05 }} className="bg-card border border-border rounded-lg p-5 mb-6">
+        <h2 className="section-title">License Utilization</h2>
+        <div className="h-[220px]">
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart data={chartData} layout="vertical" margin={{ left: 4, right: 24, top: 0, bottom: 0 }}>
+              <XAxis type="number" domain={[0, 100]} tickFormatter={v => `${v}%`} tick={{ fontSize: 11, fill: "hsl(215 14% 46%)" }} axisLine={false} tickLine={false} />
+              <YAxis type="category" dataKey="name" width={130} tick={{ fontSize: 11, fill: "hsl(215 14% 46%)" }} axisLine={false} tickLine={false} />
+              <Tooltip
+                formatter={(value: number) => [`${value}%`, "Utilization"]}
+                contentStyle={{ background: "hsl(0 0% 100%)", border: "1px solid hsl(214 20% 90%)", borderRadius: 8, fontSize: 12 }}
+              />
+              <Bar dataKey="utilization" radius={[0, 4, 4, 0]} barSize={18}>
+                {chartData.map((entry, i) => (
+                  <Cell key={i} fill={entry.utilization > 95 ? "hsl(0 72% 51%)" : entry.utilization > 80 ? "hsl(199 89% 48%)" : "hsl(38 92% 50%)"} />
+                ))}
+              </Bar>
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+      </motion.div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Pending Work */}
@@ -105,9 +135,9 @@ export default function DashboardPage() {
       {/* Quick Stats Row */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-6">
         <MetricCard label="Pending Approvals" value={dashboardMetrics.pendingApprovals} icon={Clock} variant="warning" />
-        <MetricCard label="Failed Jobs" value={dashboardMetrics.failedJobs} icon={AlertTriangle} variant="danger" />
-        <MetricCard label="Total Licenses" value={dashboardMetrics.totalLicenses.toLocaleString()} icon={KeyRound} variant="default" />
-        <MetricCard label="Actions (7d)" value={dashboardMetrics.recentActions} icon={CheckCircle} variant="success" />
+        <MetricCard label="Failed Jobs" value={dashboardMetrics.failedJobs} icon={AlertTriangle} variant="danger" href="/jobs" />
+        <MetricCard label="Total Licenses" value={dashboardMetrics.totalLicenses.toLocaleString()} icon={KeyRound} variant="default" href="/licenses" />
+        <MetricCard label="Actions (7d)" value={dashboardMetrics.recentActions} icon={CheckCircle} variant="success" href="/audit-log" />
       </div>
     </PageLayout>
   );
