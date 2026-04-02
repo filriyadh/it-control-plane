@@ -12,6 +12,7 @@ import {
   ScrollText,
   Settings,
   Server,
+  BarChart3,
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useLocation } from "react-router-dom";
@@ -35,6 +36,7 @@ const mainNav = [
   { title: "Stale Accounts", url: "/stale-accounts", icon: UserX },
   { title: "Access & Groups", url: "/access-groups", icon: Users },
   { title: "Mailbox Access", url: "/mailbox-access", icon: Mail },
+  { title: "Mail Flow", url: "/mail-flow", icon: BarChart3 },
 ];
 
 const workflowNav = [

@@ -6,6 +6,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
 import DashboardPage from "./pages/DashboardPage";
+import MailFlowPage from "./pages/MailFlowPage";
 import LicensesPage from "./pages/LicensesPage";
 import StaleAccountsPage from "./pages/StaleAccountsPage";
 import AccessGroupsPage from "./pages/AccessGroupsPage";
@@ -42,6 +43,7 @@ const App = () => (
                   <Route path="/stale-accounts" element={<StaleAccountsPage />} />
                   <Route path="/access-groups" element={<AccessGroupsPage />} />
                   <Route path="/mailbox-access" element={<MailboxAccessPage />} />
+                  <Route path="/mail-flow" element={<MailFlowPage />} />
                   <Route path="/onboarding" element={<OnboardingPage />} />
                   <Route path="/offboarding" element={<OffboardingPage />} />
                   <Route path="/security-posture" element={<SecurityPosturePage />} />
