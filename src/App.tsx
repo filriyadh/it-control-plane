@@ -6,6 +6,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
 import DashboardPage from "./pages/DashboardPage";
+import MailFlowPage from "./pages/MailFlowPage";
 import LicensesPage from "./pages/LicensesPage";
 import StaleAccountsPage from "./pages/StaleAccountsPage";
 import AccessGroupsPage from "./pages/AccessGroupsPage";
