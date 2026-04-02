@@ -104,3 +104,95 @@ export const offboardingQueue = [
   { id: "of1", name: "Robert James", department: "Finance", lastDay: "2026-03-21", status: "in_progress", completedSteps: 3, totalSteps: 8, assignee: "admin@contoso.com" },
   { id: "of2", name: "Carol White", department: "HR", lastDay: "2026-03-28", status: "pending", completedSteps: 0, totalSteps: 8, assignee: "unassigned" },
 ];
+
+// ── Mail Flow Analytics ──────────────────────────────────────
+
+export const mailFlowMetrics = {
+  inbound24h: 12847,
+  inbound7d: 89231,
+  outbound24h: 9432,
+  outbound7d: 67815,
+  tlsPercent: 93.2,
+  tlsNoTls: 4,
+  smtpAuthClients24h: 7,
+  newSmtpAuthClients: 1,
+  queueDepth: 3,
+  queuedOver1h: 1,
+  ndrCount: 42,
+  ndrBaseline: 28,
+  highRiskPoolPercent: 12.4,
+  autoForwardsExternal: 5,
+  newAutoForwards: 2,
+};
+
+export const mailFlowTimeSeries = Array.from({ length: 14 }, (_, i) => {
+  const date = new Date("2026-03-07");
+  date.setDate(date.getDate() + i);
+  const dayLabel = date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+  const base = 800 + Math.round(Math.sin(i * 0.8) * 200);
+  const spike = i === 11 ? 600 : 0; // outbound spike on day 12
+  return {
+    date: dayLabel,
+    inbound: base + Math.round(Math.random() * 150),
+    outbound: base - 200 + Math.round(Math.random() * 120) + spike,
+    normal: base - 60 + Math.round(Math.random() * 80),
+    bulk: 40 + Math.round(Math.random() * 30),
+    highRisk: i === 11 ? 85 : 5 + Math.round(Math.random() * 10),
+    relay: 10 + Math.round(Math.random() * 15),
+  };
+});
+
+export const smtpAuthClients = [
+  { id: "sm1", sender: "printer01@contoso.com", displayName: "Floor 3 Printer", volume24h: 48, tls: "TLS 1.2", authType: "Basic", firstSeen: "2024-06-12", isNew: false },
+  { id: "sm2", sender: "scanner@contoso.com", displayName: "Mail Room Scanner", volume24h: 12, tls: "TLS 1.2", authType: "Basic", firstSeen: "2024-09-01", isNew: false },
+  { id: "sm3", sender: "noreply@contoso.com", displayName: "App Notifications", volume24h: 342, tls: "TLS 1.3", authType: "OAuth", firstSeen: "2023-01-15", isNew: false },
+  { id: "sm4", sender: "reports@contoso.com", displayName: "Report Generator", volume24h: 87, tls: "TLS 1.2", authType: "Basic", firstSeen: "2025-02-20", isNew: false },
+  { id: "sm5", sender: "autobot@contoso.com", displayName: "Unknown Service", volume24h: 214, tls: "TLS 1.0", authType: "Basic", firstSeen: "2026-03-19", isNew: true },
+  { id: "sm6", sender: "helpdesk-form@contoso.com", displayName: "Helpdesk Portal", volume24h: 23, tls: "TLS 1.2", authType: "OAuth", firstSeen: "2024-11-08", isNew: false },
+  { id: "sm7", sender: "crm-sync@contoso.com", displayName: "CRM Integration", volume24h: 156, tls: "TLS 1.3", authType: "OAuth", firstSeen: "2025-06-01", isNew: false },
+];
+
+export const mailAnomalies = [
+  { id: "ma1", severity: "danger" as const, text: "New SMTP AUTH sender: autobot@contoso.com (using TLS 1.0, Basic Auth)", time: "4h ago" },
+  { id: "ma2", severity: "danger" as const, text: "High-risk outbound pool at 12.4% — threshold is 10%", time: "2h ago" },
+  { id: "ma3", severity: "warning" as const, text: "TLS encryption dropped to 93.2% — 4 connections used NoTLS", time: "6h ago" },
+  { id: "ma4", severity: "warning" as const, text: "autobot@contoso.com volume +400% vs 7-day baseline", time: "3h ago" },
+  { id: "ma5", severity: "warning" as const, text: "NDR spike: 42 vs 28 baseline — mostly 5.7.1 (relay denied)", time: "5h ago" },
+  { id: "ma6", severity: "info" as const, text: "2 new auto-forwarding rules to external domains detected", time: "8h ago" },
+  { id: "ma7", severity: "info" as const, text: "1 message queued for >1 hour to partner.org (connector timeout)", time: "45m ago" },
+  { id: "ma8", severity: "warning" as const, text: "fabrikam.com suddenly routed through high-risk pool", time: "1h ago" },
+];
+
+export const topDomains = [
+  { domain: "outlook.com", inbound: 3240, outbound: 1820, highRisk: false, change: "+3%" },
+  { domain: "gmail.com", inbound: 2890, outbound: 1450, highRisk: false, change: "-1%" },
+  { domain: "partner.org", inbound: 1200, outbound: 980, highRisk: false, change: "+12%" },
+  { domain: "fabrikam.com", inbound: 450, outbound: 620, highRisk: true, change: "+180%" },
+  { domain: "yahoo.com", inbound: 890, outbound: 340, highRisk: false, change: "0%" },
+  { domain: "contoso.com", inbound: 0, outbound: 2100, highRisk: false, change: "+2%" },
+  { domain: "supplier.net", inbound: 670, outbound: 410, highRisk: false, change: "-5%" },
+  { domain: "gov.us", inbound: 120, outbound: 85, highRisk: false, change: "+1%" },
+  { domain: "vendor.io", inbound: 340, outbound: 290, highRisk: false, change: "+8%" },
+  { domain: "alumni.edu", inbound: 210, outbound: 50, highRisk: false, change: "-12%" },
+];
+
+export const ndrBreakdown = [
+  { code: "5.7.1", description: "Relay access denied", count: 18, trend: "up" as const },
+  { code: "5.1.1", description: "Recipient not found", count: 9, trend: "stable" as const },
+  { code: "5.4.1", description: "No answer from host", count: 6, trend: "up" as const },
+  { code: "5.2.1", description: "Mailbox full", count: 5, trend: "stable" as const },
+  { code: "5.7.54", description: "SMTP AUTH required", count: 4, trend: "down" as const },
+];
+
+export const queueStatus = [
+  { bracket: "0–15 min", count: 12, connector: "Default", domain: "various" },
+  { bracket: "15–60 min", count: 5, connector: "Partner Connector", domain: "partner.org" },
+  { bracket: "> 1 hour", count: 1, connector: "Partner Connector", domain: "partner.org" },
+];
+
+export const outboundRecipients = {
+  current: 8420,
+  limit: 10000,
+  trend: [6200, 6800, 7100, 7500, 7900, 8200, 8420],
+  trendLabels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+};

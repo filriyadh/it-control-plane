@@ -43,6 +43,7 @@ const App = () => (
                   <Route path="/stale-accounts" element={<StaleAccountsPage />} />
                   <Route path="/access-groups" element={<AccessGroupsPage />} />
                   <Route path="/mailbox-access" element={<MailboxAccessPage />} />
+                  <Route path="/mail-flow" element={<MailFlowPage />} />
                   <Route path="/onboarding" element={<OnboardingPage />} />
                   <Route path="/offboarding" element={<OffboardingPage />} />
                   <Route path="/security-posture" element={<SecurityPosturePage />} />
